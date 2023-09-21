@@ -1,0 +1,50 @@
+version: '3.8'
+
+name: messaging-stub
+
+services:
+
+  cyrus:
+
+    container_name: cyrus_stub
+
+    build:
+      context: ./Cyrus
+      dockerfile: Dockerfile
+
+    image: my_cyrus:11.7
+    restart: unless-stopped
+
+    cap_add:
+      - SYS_PTRACE
+
+    ports:
+      - ${EXT_IMAP:-20143}:143
+      - ${EXT_IMAPS:-20993}:993
+      - ${EXT_SMTP:-20025}:25
+      - ${EXT_HTTP:-28008}:8008
+
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./users.list:/tmp/users.list
+
+  roundcube:
+
+    container_name: roundcube_stub
+    image: roundcube/roundcubemail:1.6.0-apache  
+    restart: unless-stopped
+
+    ports:
+      - ${EXT_WEBMAIL:-20080}:80
+    
+    environment:
+      - ROUNDCUBEMAIL_DB_TYPE=sqlite
+      - ROUNDCUBEMAIL_SKIN=elastic
+      - ROUNDCUBEMAIL_DEFAULT_HOST=cyrus
+      - ROUNDCUBEMAIL_DEFAULT_PORT=143
+      - ROUNDCUBEMAIL_SMTP_SERVER=cyrus
+      - ROUNDCUBEMAIL_SMTP_PORT=25
+      - ROUNDCUBEMAIL_UPLOAD_MAX_FILESIZE=10M
+
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
