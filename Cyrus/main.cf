@@ -1,0 +1,65 @@
+# See /usr/share/postfix/main.cf.dist for a commented, more complete version
+
+smtpd_banner = $myhostname ESMTP $mail_name (Debian/GNU)
+biff = no
+
+# appending .domain is the MUA's job.
+append_dot_mydomain = no
+
+# Uncomment the next line to generate "delayed mail" warnings
+#delay_warning_time = 4h
+
+readme_directory = /usr/share/doc/postfix
+html_directory = /usr/share/doc/postfix/html
+
+# See http://www.postfix.org/COMPATIBILITY_README.html -- default to 2 on
+# fresh installs.
+compatibility_level = 2
+
+local_transport = error:local mail delivery is disabled
+
+myhostname = $POSTFIX_MYHOSTNAME
+myorigin = /etc/mailname
+alias_maps = hash:/etc/aliases
+alias_database = hash:/etc/aliases
+
+mynetworks = $POSTFIX_MYNETWORKS
+
+mailbox_size_limit = $POSTFIX_MAILBOX_SIZE_LIMIT
+recipient_delimiter = +
+inet_interfaces = all
+inet_protocols = ipv4
+
+mydestination = $myhostname, localhost
+
+relay_domains = $POSTFIX_RELAY_DOMAINS
+
+relayhost = $POSTFIX_RELAY_HOST
+local_recipient_maps = 
+
+default_transport = error
+relay_transport = error
+
+smtpd_relay_restrictions = permit_mynetworks,
+                           permit_sasl_authenticated,
+                           defer_unauth_destination
+
+transport_maps = cdb:/etc/postfix/transport_to_mbx
+
+smtpd_recipient_restrictions = permit_mynetworks, 
+                               permit_sasl_authenticated,
+
+smtpd_sasl_auth_enable = yes
+smtpd_sasl_authenticated_header = yes
+broken_sasl_auth_clients = yes
+
+# TLS parameters
+smtpd_tls_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
+smtpd_tls_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
+smtpd_use_tls=no
+smtpd_tls_security_level=may
+smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
+
+smtp_tls_CApath=/etc/ssl/certs
+smtp_tls_security_level=may
+smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
