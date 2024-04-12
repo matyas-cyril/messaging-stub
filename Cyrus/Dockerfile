@@ -1,4 +1,4 @@
-FROM debian:11.7-slim
+FROM debian:12.5-slim
 
 LABEL autor="matyas-cyril"
 
@@ -12,7 +12,7 @@ ENV CYRUS_AUTOCREATE_QUOTA=0
 ENV CPT_USERS_LIST='/tmp/users.list'
 
 RUN apt-get update && apt-get -y upgrade && \
-    apt-get install -y man-db htop db-util db-upgrade-util locate gettext-base
+    apt-get install -y man-db htop db-util locate gettext-base systemctl
 
 RUN apt-get install -y sasl2-bin vim vim-common rsyslog rsyslog-doc
 
@@ -60,7 +60,7 @@ RUN envsubst '$CYRUS_LOGIN_REALMS,$CYRUS_AUTOCREATE_QUOTA' < /etc/imapd.conf > /
 
 RUN echo 'while [ 1 ]; do sleep 1 ;done;' > /loop_inf.sh && chmod +x /loop_inf.sh
 
-CMD service rsyslog restart && \
+CMD systemctl restart rsyslog.service && \
     service cyrus-imapd start && \
     service postfix start && \
     /create_cpt.sh $CPT_USERS_LIST; \

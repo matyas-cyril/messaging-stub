@@ -1,4 +1,3 @@
-version: '3.8'
 
 name: messaging-stub
 
@@ -12,7 +11,7 @@ services:
       context: ./Cyrus
       dockerfile: Dockerfile
 
-    image: my_cyrus:11.7
+    image: my_cyrus:12.5
     restart: unless-stopped
 
     cap_add:

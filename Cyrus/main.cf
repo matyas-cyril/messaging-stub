@@ -12,9 +12,8 @@ append_dot_mydomain = no
 readme_directory = /usr/share/doc/postfix
 html_directory = /usr/share/doc/postfix/html
 
-# See http://www.postfix.org/COMPATIBILITY_README.html -- default to 2 on
-# fresh installs.
-compatibility_level = 2
+# See http://www.postfix.org/COMPATIBILITY_README.html -- default to 3.6 on fresh installs.
+compatibility_level = 3.6
 
 local_transport = error:local mail delivery is disabled
 
