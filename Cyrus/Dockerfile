@@ -1,4 +1,4 @@
-FROM debian:12.5-slim
+FROM debian:13.2-slim
 
 LABEL autor="matyas-cyril"
 
@@ -11,10 +11,12 @@ ENV CYRUS_LOGIN_REALMS='email.test'
 ENV CYRUS_AUTOCREATE_QUOTA=0
 ENV CPT_USERS_LIST='/tmp/users.list'
 
-RUN apt-get update && apt-get -y upgrade && \
-    apt-get install -y man-db htop db-util locate gettext-base systemctl
+RUN echo $POSTFIX_MYHOSTNAME > /etc/mailname
 
-RUN apt-get install -y sasl2-bin vim vim-common rsyslog rsyslog-doc
+RUN apt-get update && apt-get -y upgrade && \
+    apt-get install -y man-db htop procps db-util locate gettext-base systemctl
+
+RUN apt-get install -y sasl2-bin vim vim-common syslog-ng tree
 
 # Installation de Postfix
 RUN echo "postfix postfix/main_mailer_type string 'No configuration'" | debconf-set-selections && \
@@ -34,14 +36,16 @@ RUN echo "\nif [[ -f /usr/bin/rlwrap && -f /usr/bin/cyradm ]]; then\n\
     ln -s /usr/lib/cyrus/bin/imapd /usr/lib/cyrus/bin/proxyd && \
     ln -s /usr/lib/cyrus/bin/lmtpd /usr/lib/cyrus/bin/lmtpproxyd && \
     ln -s /usr/lib/cyrus/bin/pop3d /usr/lib/cyrus/bin/pop3proxyd
-    
-    
+  
 COPY --chown=root:root cyrus.conf imapd.conf imapd-ext.conf /etc/
+COPY --chown=root:root cyrus-imapd.initd /etc/init.d/cyrus-imapd
+COPY --chown=root:root bashrc /root/.bashrc
 COPY --chown=root:root main.cf /etc/postfix/
 COPY --chown=root:root master.cf /etc/postfix/
 COPY --chown=root:root smtpd.conf /etc/postfix/sasl/
-COPY --chown=root:root rsyslog.conf /etc/rsyslog.conf
 COPY --chown=root:root create_cpt.sh /create_cpt.sh
+COPY --chown=root:root syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
+COPY --chown=root:root syslog-ng.default /etc/default/syslog-ng
 
 RUN /usr/sbin/usermod -aG mail postfix
 RUN /usr/bin/gpasswd -a postfix sasl
@@ -60,7 +64,7 @@ RUN envsubst '$CYRUS_LOGIN_REALMS,$CYRUS_AUTOCREATE_QUOTA' < /etc/imapd.conf > /
 
 RUN echo 'while [ 1 ]; do sleep 1 ;done;' > /loop_inf.sh && chmod +x /loop_inf.sh
 
-CMD systemctl restart rsyslog.service && \
+CMD service syslog-ng start && \
     service cyrus-imapd start && \
     service postfix start && \
     /create_cpt.sh $CPT_USERS_LIST; \
