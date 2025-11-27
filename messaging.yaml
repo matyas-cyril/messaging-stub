@@ -11,11 +11,8 @@ services:
       context: ./Cyrus
       dockerfile: Dockerfile
 
-    image: my_cyrus:12.5
+    image: my_cyrus:13.2
     restart: unless-stopped
-
-    cap_add:
-      - SYS_PTRACE
 
     ports:
       - ${EXT_IMAP:-20143}:143
