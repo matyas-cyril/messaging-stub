@@ -10,6 +10,8 @@ services:
     build:
       context: ./Cyrus
       dockerfile: Dockerfile
+      args:
+        PRIVATE_REGISTRY: ${PRIVATE_REGISTRY}
 
     image: my_cyrus:13.2
     restart: unless-stopped

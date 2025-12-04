@@ -1,4 +1,9 @@
-FROM debian:13.2-slim
+
+ARG PRIVATE_REGISTRY=""
+ARG IMAGE="debian"
+ARG TAG="13.2-slim"
+
+FROM ${PRIVATE_REGISTRY}${IMAGE}:${TAG}
 
 LABEL autor="matyas-cyril"
 
