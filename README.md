@@ -14,7 +14,7 @@ Générer à des fins de test un environement "bouchon" contenant un serveur Cyr
 $ docker compose -f messaging.yaml up -d
 ```
 
-## Avec vaiables d'envirronnement 
+## Avec variables d'envirronnement 
 
 ```
 $ docker compose -f messaging.yaml --env-file dot.env up -d
@@ -33,6 +33,7 @@ Permet de changer les valeurs par défaut d'exécution du docker compose.
 | EXT_SMTP | 20025 | SMTP |
 | EXT_HTTP | 28008 | CalDav |
 | EXT_WEBMAIL | 20080 | RoundCube |
+| PRIVATE_REGISTRY | | Définir un registry privé. <br /> Ne pas oublier le '/'.<br />Exemple: private/ |
 
 ## users.list
 
