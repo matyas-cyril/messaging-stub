@@ -11,7 +11,7 @@ services:
       context: ./Cyrus
       dockerfile: Dockerfile
       args:
-        PRIVATE_REGISTRY: ${PRIVATE_REGISTRY}
+        PRIVATE_REGISTRY: ${PRIVATE_REGISTRY:-}
 
     image: my_cyrus:13.2
     restart: unless-stopped
@@ -29,7 +29,7 @@ services:
   roundcube:
 
     container_name: roundcube_stub
-    image: roundcube/roundcubemail:1.6.0-apache  
+    image: ${PRIVATE_REGISTRY:-}roundcube/roundcubemail:1.6.11-apache  
     restart: unless-stopped
 
     ports:
